@@ -623,11 +623,12 @@ app.get('/api/diretor/professores', authenticateToken, isDirecao, async (req, re
 app.get('/professor/turmas', authenticateToken, isProfessor, async (req, res) => {
     try {
         const result = await pool.query(`
-            SELECT t.*, COUNT(m.aluno_id)::integer AS total_alunos
+            SELECT DISTINCT t.*, COUNT(m.aluno_id)::integer AS total_alunos
             FROM turmas t
+            JOIN alocacao_professores ap ON ap.turma_id = t.id
             LEFT JOIN matriculas m ON m.turma_id = t.id
-            WHERE t.professor_id = $1
-            GROUP BY t.id ORDER BY t.nome
+            WHERE ap.professor_id = $1
+            GROUP BY t.id, t.nome, t.ano_letivo, t.escola_id ORDER BY t.nome
         `, [req.user.id]);
         res.json(result.rows);
     } catch (err) {
@@ -650,7 +651,7 @@ app.get('/professor/turmas/:id/alunos', authenticateToken, isProfessor, async (r
     try {
         const turma = await pool.query('SELECT * FROM turmas WHERE id = $1 AND professor_id = $2', [id, req.user.id]);
         if (turma.rowCount === 0) return res.status(404).json({ message: 'Turma não encontrada.' });
-                const alunos = await pool.query(`
+        const alunos = await pool.query(`
             SELECT u.id, u.nome, u.email,
                          COALESCE((SELECT n.nota FROM notas_academicas n WHERE n.aluno_id = u.id AND n.turma_id = $1 AND n.disciplina_id = $2 AND n.ano_letivo = EXTRACT(YEAR FROM CURRENT_DATE)::integer AND n.bimestre = 1), '') AS nota_b1,
                          COALESCE((SELECT n.nota FROM notas_academicas n WHERE n.aluno_id = u.id AND n.turma_id = $1 AND n.disciplina_id = $2 AND n.ano_letivo = EXTRACT(YEAR FROM CURRENT_DATE)::integer AND n.bimestre = 2), '') AS nota_b2,
