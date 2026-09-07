@@ -2,6 +2,8 @@ const token = localStorage.getItem('token');
 const papel = localStorage.getItem('papel');
 
 if (!token) window.location.href = 'index.html';
+if (window.location.pathname.endsWith('diretor.html') && !['diretor', 'direcao'].includes(papel)) window.location.href = 'index.html';
+if (window.location.pathname.endsWith('professor.html') && papel !== 'professor') window.location.href = 'index.html';
 
 document.addEventListener('DOMContentLoaded', () => {
     const nomeElement = document.getElementById('nome-usuario');

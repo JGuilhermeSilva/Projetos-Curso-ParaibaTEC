@@ -12,7 +12,7 @@
 <body>
     <div class="dashboard">
         <aside class="sidebar">
-            <div class="logo">CadernoDigital</div>
+            <div class="logo">caderno.digital</div>
             <div class="user-profile">
                 <div class="avatar"><i class="fas fa-chalkboard-teacher"></i></div>
                 <div class="user-info"><strong id="nome-usuario"></strong><br><small>Professor</small></div>
@@ -20,19 +20,20 @@
             <nav class="menu">
                 <div class="menu-item active" onclick="abrirAba('turmas', this)"><i class="fas fa-home"></i> Minhas
                     Turmas</div>
-                <div class="menu-item" onclick="abrirAba('planos', this)"><i class="fas fa-file-alt"></i> Planos de
-                    Ensino</div>
-                <div class="menu-item" onclick="abrirAba('agenda', this)"><i class="fas fa-calendar-alt"></i> Agenda
-                </div>
-                <div class="menu-item" onclick="abrirAba('diarios', this)"><i class="fas fa-book-open"></i> Diários
-                </div>
-                <div class="menu-item" onclick="abrirAba('horarios', this)"><i class="fas fa-clock"></i> Horários</div>
+                <div class="menu-item" onclick="abrirAba('diarios', this)"><i class="fas fa-book-open"></i> Diário de Classe</div>
+                <div class="menu-item" onclick="abrirAba('frequencia', this)"><i class="fas fa-user-check"></i> Frequência</div>
+                <div class="menu-item" onclick="abrirAba('notas', this)"><i class="fas fa-chart-line"></i> Notas</div>
+                <div class="menu-item" onclick="abrirAba('relatorios', this)"><i class="fas fa-file-alt"></i> Relatórios</div>
             </nav>
             <div class="logout-btn" onclick="sair()">Sair</div>
         </aside>
         <main class="main-content">
+            <header class="top-bar" style="justify-content:space-between; padding:16px 32px;">
+                <div class="breadcrumb"><strong>Portal Escolar</strong> <span>/</span> Área do Professor</div>
+                <div style="display:flex;align-items:center;gap:14px;color:#6d7b87;font-size:12px;"><i class="fas fa-bell"></i><span id="topbar-date"></span><strong id="topbar-name"></strong></div>
+            </header>
             <div class="content-area" id="conteudo-principal">
-                <!-- Conteúdo dinâmico -->
+                <div class="empty-state">Carregando seu espaço de trabalho...</div>
             </div>
         </main>
     </div>
