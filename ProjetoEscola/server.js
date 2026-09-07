@@ -377,6 +377,7 @@ app.delete('/users/:id', authenticateToken, isDirecao, async (req, res) => {
         await client.query('DELETE FROM perfis WHERE user_id = $1', [id]);
         await client.query('DELETE FROM users WHERE id = $1', [id]);
         await client.query('COMMIT');
+        await registrarAuditoria(req.user.id, 'DELETE', 'user', Number(id), { papel, id: Number(id) }, null);
         res.json({ message: 'Usuário excluído!' });
     } catch (err) {
         await client.query('ROLLBACK');
@@ -474,6 +475,7 @@ app.post('/api/turmas/:id/matricular', authenticateToken, isDirecao, async (req,
             serie = EXCLUDED.serie, data_matricula = EXCLUDED.data_matricula, status = 'ativa', data_saida = NULL, motivo_saida = NULL
             RETURNING id`, [aluno_id, id, turma.rows[0].escola_id, ano_letivo || turma.rows[0].ano_letivo || new Date().getFullYear(), serie || null, data_matricula || null]);
         await client.query('COMMIT');
+        await registrarAuditoria(req.user.id, 'ENROLL', 'matricula', result.rows[0].id, null, { aluno_id, turma_id: id, ano_letivo, serie });
         res.status(201).json({ message: 'Aluno matriculado!', matricula_id: result.rows[0].id });
     } catch (err) {
         await client.query('ROLLBACK');
@@ -531,8 +533,17 @@ app.post('/api/diretor/alunos/:id/transferir', authenticateToken, isDirecao, asy
 app.delete('/api/turmas/:id/matricular/:alunoId', authenticateToken, isDirecao, async (req, res) => {
     const { id, alunoId } = req.params;
     try {
-        await pool.query('DELETE FROM matriculas WHERE turma_id = $1 AND aluno_id = $2', [id, alunoId]);
-        res.json({ message: 'Aluno removido da turma (dados mantidos!)' });
+        const result = await pool.query(
+            `UPDATE matriculas SET status = 'removida', data_saida = CURRENT_DATE, motivo_saida = 'Remoção manual da turma'
+             WHERE turma_id = $1 AND aluno_id = $2 AND status = 'ativa' RETURNING id`,
+            [id, alunoId]
+        );
+        if (result.rowCount === 0) {
+            await pool.query('DELETE FROM matriculas WHERE turma_id = $1 AND aluno_id = $2', [id, alunoId]);
+        } else {
+            await registrarAuditoria(req.user.id, 'REMOVE_MATRICULA', 'matricula', result.rows[0].id, { turma_id: id, aluno_id: alunoId }, { status: 'removida', data_saida: new Date() });
+        }
+        res.json({ message: 'Aluno removido da turma (histórico preservado!).' });
     } catch (err) {
         res.status(500).json({ message: 'Erro ao remover aluno', error: err.message });
     }
@@ -541,7 +552,7 @@ app.delete('/api/turmas/:id/matricular/:alunoId', authenticateToken, isDirecao, 
 // ========== ROTAS DE LISTAGEM PARA O DIRETOR ==========
 app.get('/api/diretor/alunos', authenticateToken, isDirecao, async (req, res) => {
     try {
-        const { busca, escola_id, idade_min, idade_max, transporte_escolar, regiao, necessidades_alimentares, bolsa_familia, autorizacao_imagem } = req.query;
+        const { busca, escola_id, serie, situacao, idade_min, idade_max, transporte_escolar, regiao, necessidades_alimentares, bolsa_familia, autorizacao_imagem } = req.query;
         const filtros = ["u.papel = 'aluno'"];
         const parametros = [];
         const adicionarFiltro = (sql, valor) => {
@@ -553,6 +564,14 @@ app.get('/api/diretor/alunos', authenticateToken, isDirecao, async (req, res) =>
             filtros.push(`(LOWER(u.nome) LIKE LOWER($${parametros.length}) OR LOWER(COALESCE(p.matricula, '')) LIKE LOWER($${parametros.length}))`);
         }
         if (escola_id) adicionarFiltro('matricula_atual.escola_id = ?', escola_id);
+        if (serie) adicionarFiltro('COALESCE(matricula_atual.serie, p.ano) ILIKE ?', `%${serie}%`);
+        if (situacao === 'matriculado') {
+            filtros.push("matricula_atual.status = 'ativa'");
+        } else if (situacao === 'sem_matricula') {
+            filtros.push("matricula_atual.status IS NULL");
+        } else if (situacao === 'transferido') {
+            filtros.push("(matricula_atual.status IS NULL AND EXISTS (SELECT 1 FROM matriculas m_transf WHERE m_transf.aluno_id = u.id AND m_transf.status = 'transferida'))");
+        }
         if (idade_min) adicionarFiltro("DATE_PART('year', AGE(CURRENT_DATE, p.data_nascimento)) >= ?", Number(idade_min));
         if (idade_max) adicionarFiltro("DATE_PART('year', AGE(CURRENT_DATE, p.data_nascimento)) <= ?", Number(idade_max));
         if (transporte_escolar === 'true' || transporte_escolar === 'false') adicionarFiltro('p.transporte_escolar = ?', transporte_escolar === 'true');
@@ -947,23 +966,111 @@ app.get('/api/diretor/alunos/:id/historico', authenticateToken, isDirecao, async
     }
 });
 
-app.get('/api/diretor/alunos/:id/boletim', authenticateToken, isDirecao, async (req, res) => {
-    const anoLetivo = Number(req.query.ano_letivo || new Date().getFullYear());
+app.get('/api/diretor/disciplinas', authenticateToken, isDirecao, async (req, res) => {
     try {
-        const result = await pool.query(`
-            SELECT n.aluno_id, n.turma_id, n.ano_letivo, n.bimestre, n.nota, n.conceito,
-                   d.id AS disciplina_id, d.nome AS disciplina_nome, d.codigo, d.carga_horaria,
-                   t.nome AS turma_nome, e.nome AS escola_nome
-            FROM notas_academicas n
-            JOIN disciplinas_escolares d ON d.id = n.disciplina_id
-            JOIN turmas t ON t.id = n.turma_id
-            LEFT JOIN escolas e ON e.id = t.escola_id
-            WHERE n.aluno_id = $1 AND n.ano_letivo = $2
-            ORDER BY d.nome, n.bimestre
-        `, [req.params.id, anoLetivo]);
+        const result = await pool.query('SELECT id, nome, codigo, carga_horaria FROM disciplinas_escolares WHERE ativa = TRUE ORDER BY nome');
         res.json(result.rows);
     } catch (err) {
+        res.status(500).json({ message: 'Erro ao listar disciplinas', error: err.message });
+    }
+});
+
+app.get('/api/diretor/alunos/:id/boletim', authenticateToken, isDirecao, async (req, res) => {
+    const alunoId = Number(req.params.id);
+    const anoLetivo = Number(req.query.ano_letivo || new Date().getFullYear());
+    try {
+        const matricula = await pool.query(`
+            SELECT m.turma_id, m.serie, m.status, t.nome AS turma_nome, e.id AS escola_id, e.nome AS escola_nome
+            FROM matriculas m
+            JOIN turmas t ON t.id = m.turma_id
+            LEFT JOIN escolas e ON e.id = m.escola_id
+            WHERE m.aluno_id = $1 AND m.ano_letivo = $2
+            ORDER BY CASE WHEN m.status = 'ativa' THEN 1 ELSE 2 END, m.data_matricula DESC
+            LIMIT 1
+        `, [alunoId, anoLetivo]);
+
+        const infoMatricula = matricula.rows[0] || null;
+        const turmaId = infoMatricula ? infoMatricula.turma_id : null;
+
+        const freqResult = await pool.query(`
+            SELECT 
+                COUNT(*) FILTER (WHERE status = 'presente')::integer AS presencas,
+                COUNT(*) FILTER (WHERE status = 'ausente')::integer AS faltas,
+                COUNT(*) FILTER (WHERE status = 'justificada')::integer AS justificadas,
+                COUNT(*)::integer AS total_aulas
+            FROM frequencias
+            WHERE aluno_id = $1 ${turmaId ? 'AND turma_id = $2' : ''}
+        `, turmaId ? [alunoId, turmaId] : [alunoId]);
+
+        const freq = freqResult.rows[0] || { presencas: 0, faltas: 0, justificadas: 0, total_aulas: 0 };
+        const percFreq = freq.total_aulas > 0
+            ? Math.round((freq.presencas / freq.total_aulas) * 100)
+            : 100;
+
+        const result = await pool.query(`
+            SELECT d.id AS disciplina_id, d.nome AS disciplina_nome, d.codigo, d.carga_horaria,
+                   n.bimestre, n.nota, n.conceito
+            FROM disciplinas_escolares d
+            LEFT JOIN notas_academicas n ON n.disciplina_id = d.id AND n.aluno_id = $1 AND n.ano_letivo = $2
+            WHERE d.ativa = TRUE
+            ORDER BY d.nome, n.bimestre
+        `, [alunoId, anoLetivo]);
+
+        res.json({
+            ano_letivo: anoLetivo,
+            matricula: infoMatricula,
+            frequencia: {
+                ...freq,
+                percentual: percFreq
+            },
+            linhas: result.rows
+        });
+    } catch (err) {
         res.status(500).json({ message: 'Erro ao carregar boletim', error: err.message });
+    }
+});
+
+app.post('/api/diretor/alunos/:id/historico', authenticateToken, isDirecao, async (req, res) => {
+    const alunoId = Number(req.params.id);
+    const { escola_id, ano_letivo, serie, disciplina_id, carga_horaria, media_final, frequencia_percentual, situacao } = req.body;
+    if (!ano_letivo || !disciplina_id || media_final === undefined) {
+        return res.status(400).json({ message: 'Ano letivo, disciplina e média final são obrigatórios.' });
+    }
+    try {
+        const result = await pool.query(`
+            INSERT INTO historico_escolar (aluno_id, escola_id, ano_letivo, serie, disciplina_id, carga_horaria, media_final, frequencia_percentual, situacao)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            ON CONFLICT (aluno_id, ano_letivo, disciplina_id)
+            DO UPDATE SET escola_id = EXCLUDED.escola_id, serie = EXCLUDED.serie, carga_horaria = EXCLUDED.carga_horaria,
+                          media_final = EXCLUDED.media_final, frequencia_percentual = EXCLUDED.frequencia_percentual,
+                          situacao = EXCLUDED.situacao
+            RETURNING *
+        `, [
+            alunoId,
+            escola_id || null,
+            Number(ano_letivo),
+            serie || null,
+            Number(disciplina_id),
+            carga_horaria ? Number(carga_horaria) : null,
+            Number(media_final),
+            frequencia_percentual ? Number(frequencia_percentual) : null,
+            situacao || (Number(media_final) >= 6 ? 'Aprovado' : 'Reprovado')
+        ]);
+        await registrarAuditoria(req.user.id, 'UPSERT', 'historico_escolar', result.rows[0].id, null, result.rows[0]);
+        res.status(201).json({ message: 'Registro do histórico salvo com sucesso!', registro: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ message: 'Erro ao salvar histórico escolar', error: err.message });
+    }
+});
+
+app.delete('/api/diretor/historico/:id', authenticateToken, isDirecao, async (req, res) => {
+    try {
+        const result = await pool.query('DELETE FROM historico_escolar WHERE id = $1 RETURNING *', [req.params.id]);
+        if (result.rowCount === 0) return res.status(404).json({ message: 'Registro de histórico não encontrado.' });
+        await registrarAuditoria(req.user.id, 'DELETE', 'historico_escolar', Number(req.params.id), result.rows[0], null);
+        res.json({ message: 'Registro removido do histórico.' });
+    } catch (err) {
+        res.status(500).json({ message: 'Erro ao excluir registro de histórico', error: err.message });
     }
 });
 
@@ -986,7 +1093,8 @@ app.get('/api/diretor/relatorios/indicadores', authenticateToken, isDirecao, asy
                 (SELECT COUNT(*)::integer FROM turmas WHERE ($1::integer IS NULL OR escola_id = $1)) AS turmas,
                 (SELECT COUNT(*)::integer FROM matriculas WHERE status = 'ativa' AND ($1::integer IS NULL OR escola_id = $1)) AS matriculas_ativas,
                 (SELECT COUNT(*)::integer FROM matriculas WHERE status = 'transferida' AND ($1::integer IS NULL OR escola_id = $1)) AS transferencias,
-                (SELECT COUNT(*)::integer FROM documentos_alunos) AS documentos
+                (SELECT COUNT(*)::integer FROM documentos_alunos) AS documentos,
+                (SELECT COUNT(*)::integer FROM users u WHERE u.papel = 'aluno' AND NOT EXISTS (SELECT 1 FROM matriculas m WHERE m.aluno_id = u.id AND m.status = 'ativa')) AS alunos_sem_turma
         `, [escolaId]);
         res.json(result.rows[0]);
     } catch (err) {
@@ -1071,4 +1179,25 @@ app.post('/api/diretor/alunos/:id/documentos/upload', authenticateToken, isDirec
             res.status(500).json({ message: 'Erro ao salvar documento', error: err.message });
         }
     });
+});
+
+app.delete('/api/diretor/documentos/:id', authenticateToken, isDirecao, async (req, res) => {
+    try {
+        const docResult = await pool.query('SELECT * FROM documentos_alunos WHERE id = $1', [req.params.id]);
+        if (docResult.rowCount === 0) {
+            return res.status(404).json({ message: 'Documento não encontrado.' });
+        }
+        const doc = docResult.rows[0];
+        if (doc.caminho && doc.caminho.startsWith('/uploads/documents/')) {
+            const filePath = path.join(__dirname, 'public', doc.caminho.replace(/^\//, '').replaceAll('/', path.sep));
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        }
+        await pool.query('DELETE FROM documentos_alunos WHERE id = $1', [req.params.id]);
+        await registrarAuditoria(req.user.id, 'DELETE', 'documento', Number(req.params.id), doc, null);
+        res.json({ message: 'Documento excluído com sucesso.' });
+    } catch (err) {
+        res.status(500).json({ message: 'Erro ao excluir documento', error: err.message });
+    }
 });

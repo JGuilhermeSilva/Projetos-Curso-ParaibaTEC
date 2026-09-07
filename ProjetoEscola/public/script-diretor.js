@@ -38,7 +38,18 @@ async function buscarEscolas() {
 async function carregarEscolasCadastro() {
     const escolas = await buscarEscolas();
     const select = document.getElementById('cad-unidade');
-    if (select && escolas.length) select.innerHTML = escolas.map(escola => `<option value="${escola.nome}" data-escola-id="${escola.id}" data-decreto="${escola.decreto_criacao || ''}">${escola.nome}</option>`).join('');
+    if (select && escolas.length) {
+        select.innerHTML = escolas.map(escola => `<option value="${escola.nome}" data-escola-id="${escola.id}" data-decreto="${escola.decreto_criacao || ''}">${escola.nome}</option>`).join('');
+        select.onchange = () => {
+            const opt = select.selectedOptions[0];
+            const campoDecreto = document.getElementById('cad-decreto');
+            if (campoDecreto && opt) campoDecreto.value = opt.dataset.decreto || '';
+        };
+        const campoDecreto = document.getElementById('cad-decreto');
+        if (campoDecreto && !campoDecreto.value && select.selectedOptions[0]) {
+            campoDecreto.value = select.selectedOptions[0].dataset.decreto || '';
+        }
+    }
     const turmaEscola = document.getElementById('turma-escola');
     if (turmaEscola && escolas.length) turmaEscola.innerHTML = `<option value="">Selecione a escola</option>${escolas.map(escola => `<option value="${escola.id}">${escola.nome}</option>`).join('')}`;
     const filtroEscola = document.getElementById('filtro-escola');
@@ -105,9 +116,7 @@ async function abrirFichaAluno(alunoId) {
     alunoFichaAtual = aluno;
     const foto = aluno.avatar_url ? `<img src="${aluno.avatar_url}" alt="Foto de ${aluno.nome}">` : '<span>' + aluno.nome.charAt(0).toUpperCase() + '</span>';
     const acaoFoto = aluno.avatar_url ? `<button class="remove-photo-button" onclick="removerFotoPerfil(${aluno.id})"><i class="fas fa-trash"></i> Remover foto</button>` : '';
-    document.body.insertAdjacentHTML('beforeend', `<div class="modal-overlay" id="modal-ficha"><div class="modal-content ficha-modal"><div class="modal-heading"><div><div class="breadcrumb">Alunos <span>/</span> Ficha</div><h2>Ficha do aluno</h2></div><button class="btn-secondary" onclick="document.getElementById('modal-ficha').remove()"><i class="fas fa-times"></i></button></div><div class="student-summary"><div class="student-avatar">${foto}</div><div class="student-summary-main"><h3>${aluno.nome}</h3><p>Matrícula: ${aluno.matricula || 'Não informada'} · ${aluno.email}</p><label class="upload-photo-button"><i class="fas fa-camera"></i> Alterar foto<input type="file" accept="image/jpeg,image/png,image/webp" onchange="enviarFotoPerfil(${aluno.id}, this)"></label></div></div><div class="detail-tabs"><button class="detail-tab active" data-tab="pessoal" onclick="alternarAbaFicha('pessoal')">Dados pessoais</button><button class="detail-tab" data-tab="documentos" onclick="alternarAbaFicha('documentos')">Documentos (${aluno.documentos.length})</button><button class="detail-tab" data-tab="inscricao" onclick="alternarAbaFicha('inscricao')">Ficha de inscrição</button></div><section id="ficha-pessoal" class="ficha-tab-content"><div class="detail-grid"><div><label>Data de nascimento</label><strong>${formatarData(aluno.data_nascimento)}</strong></div><div><label>Responsável</label><strong>${aluno.nome_responsavel || '—'}</strong></div><div><label>Telefone</label><strong>${aluno.telefone || '—'}</strong></div><div><label>Endereço</label><strong>${aluno.endereco || '—'}</strong></div><div><label>CPF</label><strong>${aluno.cpf || '—'}</strong></div><div><label>Naturalidade</label><strong>${aluno.natural_de || '—'}</strong></div></div></section><section id="ficha-documentos" class="ficha-tab-content" style="display:none"><div class="documents-header"><h3 class="subheading">Documentos do aluno</h3><button class="btn-secondary" onclick="alert('O upload de documentos será liberado nesta ficha.')"><i class="fas fa-plus"></i> Adicionar documento</button></div><div class="document-list">${aluno.documentos.length ? aluno.documentos.map(documento => `<div><i class="fas fa-file-alt"></i><span>${documento.nome}<small>${documento.tipo}</small></span><a class="btn-secondary" href="${documento.caminho}" target="_blank" rel="noopener" title="Abrir documento"><i class="fas fa-external-link-alt"></i></a></div>`).join('') : '<p class="muted document-empty">Nenhum documento anexado.</p>'}</div></section><section id="ficha-inscricao" class="ficha-tab-content" style="display:none"><div class="detail-grid"><div><label>Status da inscrição</label><strong>${aluno.status_inscricao || 'Pendente'}</strong></div><div><label>Última atualização</label><strong>${formatarData(aluno.updated_at)}</strong></div><div class="detail-wide"><label>Observações</label><strong>${aluno.observacoes_inscricao || 'Nenhuma observação registrada.'}</strong></div></div><div class="documents-header"><h3 class="subheading">Histórico de matrículas</h3><button class="btn-secondary" onclick="abrirFormularioTransferencia(${aluno.id})"><i class="fas fa-exchange-alt"></i> Transferir aluno</button></div><div class="document-list">${historico.length ? historico.map(item => `<div><i class="fas fa-school"></i><span><strong>${item.escola_nome || 'Escola não informada'}</strong><small>${item.serie || 'Etapa não informada'} · ${item.ano_letivo || '—'} · ${item.status} · entrada ${formatarData(item.data_matricula)}${item.data_saida ? ` · saída ${formatarData(item.data_saida)}` : ''}</small></span></div>`).join('') : '<p class="muted document-empty">Nenhuma matrícula registrada.</p>'}</div></section></div></div>`);
-    const documentButton = document.querySelector('#ficha-documentos .documents-header button');
-    if (documentButton) documentButton.onclick = () => abrirUploadDocumento(aluno.id);
+    document.body.insertAdjacentHTML('beforeend', `<div class="modal-overlay" id="modal-ficha"><div class="modal-content ficha-modal"><div class="modal-heading"><div><div class="breadcrumb">Alunos <span>/</span> Ficha</div><h2>Ficha do aluno</h2></div><button class="btn-secondary" onclick="document.getElementById('modal-ficha').remove()"><i class="fas fa-times"></i></button></div><div class="student-summary"><div class="student-avatar">${foto}</div><div class="student-summary-main"><h3>${aluno.nome}</h3><p>Matrícula: ${aluno.matricula || 'Não informada'} · ${aluno.email}</p><label class="upload-photo-button"><i class="fas fa-camera"></i> Alterar foto<input type="file" accept="image/jpeg,image/png,image/webp" onchange="enviarFotoPerfil(${aluno.id}, this)"></label>${acaoFoto}</div></div><div class="detail-tabs"><button class="detail-tab active" data-tab="pessoal" onclick="alternarAbaFicha('pessoal')">Dados pessoais</button><button class="detail-tab" data-tab="documentos" onclick="alternarAbaFicha('documentos')">Documentos (${aluno.documentos.length})</button><button class="detail-tab" data-tab="inscricao" onclick="alternarAbaFicha('inscricao')">Ficha de inscrição</button></div><section id="ficha-pessoal" class="ficha-tab-content"><div class="detail-grid"><div><label>Data de nascimento</label><strong>${formatarData(aluno.data_nascimento)}</strong></div><div><label>Responsável</label><strong>${aluno.nome_responsavel || '—'}</strong></div><div><label>Telefone</label><strong>${aluno.telefone || '—'}</strong></div><div><label>Endereço</label><strong>${aluno.endereco || '—'}</strong></div><div><label>CPF</label><strong>${aluno.cpf || '—'}</strong></div><div><label>Naturalidade</label><strong>${aluno.natural_de || '—'}</strong></div></div></section><section id="ficha-documentos" class="ficha-tab-content" style="display:none"><div class="documents-header"><h3 class="subheading">Documentos do aluno</h3><button class="btn-secondary" onclick="abrirUploadDocumento(${aluno.id})"><i class="fas fa-plus"></i> Adicionar documento</button></div><div class="document-list">${aluno.documentos.length ? aluno.documentos.map(documento => `<div><i class="fas fa-file-alt"></i><span>${documento.nome}<small>${documento.tipo}</small></span><a class="btn-secondary" href="${documento.caminho}" target="_blank" rel="noopener" title="Abrir documento"><i class="fas fa-external-link-alt"></i></a></div>`).join('') : '<p class="muted document-empty">Nenhum documento anexado.</p>'}</div></section><section id="ficha-inscricao" class="ficha-tab-content" style="display:none"><div class="detail-grid"><div><label>Status da inscrição</label><strong>${aluno.status_inscricao || 'Pendente'}</strong></div><div><label>Última atualização</label><strong>${formatarData(aluno.updated_at)}</strong></div><div class="detail-wide"><label>Observações</label><strong>${aluno.observacoes_inscricao || 'Nenhuma observação registrada.'}</strong></div></div><div class="documents-header"><h3 class="subheading">Histórico de matrículas</h3><button class="btn-secondary" onclick="abrirFormularioTransferencia(${aluno.id})"><i class="fas fa-exchange-alt"></i> Transferir aluno</button></div><div class="document-list">${historico.length ? historico.map(item => `<div><i class="fas fa-school"></i><span><strong>${item.escola_nome || 'Escola não informada'}</strong><small>${item.serie || 'Etapa não informada'} · ${item.ano_letivo || '—'} · ${item.status} · entrada ${formatarData(item.data_matricula)}${item.data_saida ? ` · saída ${formatarData(item.data_saida)}` : ''}</small></span></div>`).join('') : '<p class="muted document-empty">Nenhuma matrícula registrada.</p>'}</div></section></div></div>`);
     const abas = document.querySelector('#modal-ficha .detail-tabs');
     if (abas) {
         abas.insertAdjacentHTML('beforeend', `<button class="detail-tab" data-tab="historico" onclick="alternarAbaFicha('historico')">Histórico escolar</button><button class="detail-tab" data-tab="boletim" onclick="alternarAbaFicha('boletim')">Boletim</button>`);
@@ -261,15 +270,15 @@ async function removerFotoPerfil(alunoId) {
     document.querySelector('#modal-ficha .remove-photo-button')?.remove();
 }
 
-const observadorFicha = new MutationObserver(() => inserirAcaoRemoverFoto());
-observadorFicha.observe(document.body, { childList: true, subtree: true });
-
 async function carregarProfessores() {
     const token = localStorage.getItem('token');
     const lista = document.getElementById('lista-professores');
     const res = await fetch('/api/diretor/professores', { headers: { 'Authorization': `Bearer ${token}` } });
     const profs = res.ok ? await res.json() : [];
-    lista.innerHTML = profs.map(p => `<li>${p.nome} - ${p.disciplinas.join(', ')} <button onclick="excluirUsuario(${p.id})">Excluir</button></li>`).join('');
+    lista.innerHTML = profs.length ? profs.map(p => {
+        const disc = Array.isArray(p.disciplinas) && p.disciplinas.length ? p.disciplinas.join(', ') : 'Nenhuma disciplina';
+        return `<li><span><strong>${p.nome}</strong> - ${disc}</span> <button class="btn-danger" onclick="excluirUsuario(${p.id})"><i class="fas fa-trash"></i> Excluir</button></li>`;
+    }).join('') : '<div class="empty-state">Nenhum professor cadastrado.</div>';
 }
 
 async function carregarTurmas() {
@@ -277,10 +286,13 @@ async function carregarTurmas() {
     const lista = document.getElementById('lista-turmas');
     const res = await fetch('/api/turmas', { headers: { 'Authorization': `Bearer ${token}` } });
     const turmas = res.ok ? await res.json() : [];
-    lista.innerHTML = turmas.map(t => `<li><span><strong>${t.nome}</strong> · ${t.escola_nome || 'Escola não informada'} (${t.ano_letivo}) - Prof: ${t.professor_nome || 'Sem professor'}</span><button onclick="excluirTurma(${t.id})">Excluir</button></li>`).join('');
+    lista.innerHTML = turmas.length ? turmas.map(t => `<li><span><strong>${t.nome}</strong> · ${t.escola_nome || 'Escola não informada'} (${t.ano_letivo}) - Prof: ${t.professor_nome || 'Sem professor'}</span><button class="btn-danger" onclick="excluirTurma(${t.id})"><i class="fas fa-trash"></i> Excluir</button></li>`).join('') : '<div class="empty-state">Nenhuma turma cadastrada.</div>';
     const resProf = await fetch('/api/diretor/professores', { headers: { 'Authorization': `Bearer ${token}` } });
-    const profs = await resProf.json();
-    document.getElementById('turma-professor').innerHTML = profs.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
+    const profs = resProf.ok ? await resProf.json() : [];
+    const selectProf = document.getElementById('turma-professor');
+    if (selectProf) {
+        selectProf.innerHTML = '<option value="">Selecione o professor</option>' + (Array.isArray(profs) ? profs.map(p => `<option value="${p.id}">${p.nome}</option>`).join('') : '');
+    }
 }
 
 function mostrarFormTurma() {
@@ -289,16 +301,27 @@ function mostrarFormTurma() {
 
 async function criarTurma() {
     const token = localStorage.getItem('token');
-    const nome = document.getElementById('turma-nome').value;
-    const ano = document.getElementById('turma-ano').value;
-    const professor_id = document.getElementById('turma-professor').value;
-    const escola_id = document.getElementById('turma-escola').value;
+    const nome = document.getElementById('turma-nome')?.value.trim();
+    const ano = document.getElementById('turma-ano')?.value;
+    const professor_id = document.getElementById('turma-professor')?.value;
+    const escola_id = document.getElementById('turma-escola')?.value;
+    if (!nome || !professor_id || !escola_id) {
+        return alert('Informe o nome da turma, a escola e o professor responsável.');
+    }
     const res = await fetch('/api/turmas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ nome, ano_letivo: ano, professor_id, escola_id })
     });
-    if (res.ok) { alert('Turma criada!'); carregarTurmas(); } else alert('Erro');
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) {
+        alert('Turma criada com sucesso!');
+        document.getElementById('turma-nome').value = '';
+        document.getElementById('form-turma').style.display = 'none';
+        carregarTurmas();
+    } else {
+        alert(data.message || 'Erro ao criar turma.');
+    }
 }
 
 async function excluirTurma(id) {
@@ -357,12 +380,12 @@ async function selecionarTurmaMatricula(turmaId, turmaData) {
 
     // Buscar alunos da turma
     const res = await fetch(`/api/turmas/${turmaId}/alunos`, { headers: { 'Authorization': `Bearer ${token}` } });
-    const alunosTurma = await res.json();
+    const alunosTurma = res.ok ? await res.json() : [];
 
     // Buscar todos os usuários (para listar os não matriculados)
     const resUsers = await fetch('/users', { headers: { 'Authorization': `Bearer ${token}` } });
-    const allUsers = await resUsers.json();
-    const alunosDisponiveis = allUsers.filter(u => u.papel === 'aluno' && !alunosTurma.find(a => a.id === u.id));
+    const allUsers = resUsers.ok ? await resUsers.json() : [];
+    const alunosDisponiveis = Array.isArray(allUsers) ? allUsers.filter(u => u.papel === 'aluno' && !alunosTurma.find(a => a.id === u.id)) : [];
 
     // Montar HTML do painel direito
     painel.innerHTML = `
@@ -480,45 +503,6 @@ async function removerAlunoDaTurma(turmaId, alunoId) {
     }
 }
 
-async function carregarAlunosTurma() {
-    const token = localStorage.getItem('token');
-    const turmaId = document.getElementById('select-turma-matricula').value;
-    const res = await fetch(`/api/turmas/${turmaId}/alunos`, { headers: { 'Authorization': `Bearer ${token}` } });
-    const alunos = await res.json();
-    const div = document.getElementById('dados-matricula');
-    div.innerHTML = `
-        <h3>Alunos na turma</h3>
-        <ul>${alunos.map(a => `<li>${a.nome} <button onclick="removerAluno(${turmaId}, ${a.id})">Remover</button></li>`).join('')}</ul>
-        <h3>Adicionar aluno (matricular)</h3>
-        <select id="select-aluno-adicionar"></select>
-        <button onclick="matricularAluno(${turmaId})">Matricular</button>
-    `;
-    const resAlunos = await fetch('/users', { headers: { 'Authorization': `Bearer ${token}` } });
-    const allUsers = await resAlunos.json();
-    const alunosNaoMatriculados = allUsers.filter(u => u.papel === 'aluno' && !alunos.find(a => a.id === u.id));
-    const selectAdd = document.getElementById('select-aluno-adicionar');
-    selectAdd.innerHTML = alunosNaoMatriculados.map(a => `<option value="${a.id}">${a.nome}</option>`).join('');
-}
-
-async function matricularAluno(turmaId) {
-    const token = localStorage.getItem('token');
-    const alunoId = document.getElementById('select-aluno-adicionar').value;
-    if (!alunoId) return alert('Selecione um aluno');
-    await fetch(`/api/turmas/${turmaId}/matricular`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ aluno_id: alunoId })
-    });
-    carregarAlunosTurma();
-}
-
-async function removerAluno(turmaId, alunoId) {
-    if (!confirm('Remover este aluno da turma? (dados dele serão mantidos)')) return;
-    const token = localStorage.getItem('token');
-    await fetch(`/api/turmas/${turmaId}/matricular/${alunoId}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
-    carregarAlunosTurma();
-}
-
 // Mostrar/esconder formulário de aluno e disciplinas
 function mostrarCampoDisciplina() {
     const papel = document.getElementById('cad-papel').value;
@@ -540,17 +524,54 @@ function mostrarCampoDisciplina() {
     } else {
         formAluno.style.display = 'none';
     }
+
+    const btnCadastrar = document.getElementById('btn-cadastrar-usuario');
+    if (btnCadastrar) {
+        if (papel === 'professor') btnCadastrar.textContent = 'Cadastrar Professor';
+        else if (papel === 'direcao') btnCadastrar.textContent = 'Cadastrar Direção';
+        else if (papel === 'aluno') btnCadastrar.textContent = 'Cadastrar Aluno';
+        else btnCadastrar.textContent = 'Cadastrar Usuário';
+    }
+}
+
+function limparFormularioCadastro() {
+    const form = document.getElementById('form-cadastro');
+    if (form) form.reset();
+    document.querySelectorAll('input[name="cad-alimentar"]').forEach(chk => chk.checked = false);
+    const formAluno = document.getElementById('form-aluno');
+    if (formAluno) formAluno.style.display = 'none';
+    const disc = document.getElementById('cad-disciplinas');
+    if (disc) { disc.style.display = 'none'; disc.value = ''; }
+    const senha = document.getElementById('cad-senha');
+    if (senha) { senha.style.display = 'none'; senha.value = ''; }
+    const papel = document.getElementById('cad-papel');
+    if (papel) papel.selectedIndex = 0;
+    const btnCadastrar = document.getElementById('btn-cadastrar-usuario');
+    if (btnCadastrar) btnCadastrar.textContent = 'Cadastrar Usuário';
 }
 
 // Função de cadastro completa
 async function cadastrarUsuario() {
     const token = localStorage.getItem('token');
     const papel = document.getElementById('cad-papel').value;
-    const nome = document.getElementById('cad-nome').value;
-    const email = document.getElementById('cad-email').value;
-    const senha = document.getElementById('cad-senha').value; // Pega a senha digitada
+    const nome = document.getElementById('cad-nome').value.trim();
+    const email = document.getElementById('cad-email').value.trim();
+    const senha = document.getElementById('cad-senha').value;
     const disciplinasTexto = document.getElementById('cad-disciplinas').value;
     const disciplinas = disciplinasTexto.split(',').map(s => s.trim()).filter(Boolean);
+
+    if (!papel || papel === '----------') {
+        return alert('Por favor, selecione o tipo de usuário (Professor, Direção ou Aluno).');
+    }
+    if (!nome) {
+        return alert('Por favor, informe o nome completo.');
+    }
+    if (!email) {
+        return alert('Por favor, informe o e-mail.');
+    }
+    if (papel === 'professor' && disciplinas.length === 0) {
+        return alert('Informe ao menos uma disciplina para o professor (separadas por vírgula).');
+    }
 
     const dados = { nome, email, papel, disciplinas, senha };
 
@@ -558,7 +579,7 @@ async function cadastrarUsuario() {
         const campo = id => document.getElementById(id)?.value || '';
         Object.assign(dados, {
             matricula: campo('cad-matricula'), grec: campo('cad-grec'), unidade: campo('cad-unidade'),
-            decreto_criacao: campo('cad-decreto'), municipio: campo('cad-municipio'), uf_escola: campo('cad-uf-escola'), sexo: campo('cad-sexo'), raca: campo('cad-raca'),
+            decreto_criacao: campo('cad-decreto'), municipio: campo('cad-municipio'), unidade_uf: campo('cad-uf-escola'), sexo: campo('cad-sexo'), raca: campo('cad-raca'),
             data_nascimento: campo('cad-nascimento'), periodo: campo('cad-periodo'), ano: campo('cad-ano'),
             nivel_ensino: campo('cad-nivel'), natural_de: campo('cad-natural'), uf: campo('cad-uf'),
             registro_nascimento: campo('cad-registro'), livro: campo('cad-livro'), folha: campo('cad-folha'),
@@ -583,9 +604,10 @@ async function cadastrarUsuario() {
         const data = await res.json();
         if (res.ok) {
             alert('Usuário cadastrado com sucesso!');
-            document.getElementById('form-cadastro')?.reset();
-            if (document.getElementById('form-aluno')) document.getElementById('form-aluno').style.display = 'none';
-            carregarAlunos();
+            limparFormularioCadastro();
+            if (papel === 'professor') carregarProfessores();
+            if (papel === 'aluno') carregarAlunos();
+            carregarDashboard();
         } else {
             alert(data.message || 'Erro ao cadastrar.');
         }
@@ -627,8 +649,6 @@ async function carregarDashboard(escolaId = '') {
         ['fa-folder-open', dados.documentos, 'Documentos']
     ].map(([icone, valor, titulo]) => `<div class="metric-card"><span class="label"><i class="fas ${icone}"></i> ${titulo}</span><strong class="value">${valor}</strong><span class="trend">Atualizado agora</span></div>`).join('');
 }
-
-document.addEventListener('DOMContentLoaded', carregarDashboard);
 
 // Fechar modal com a tecla ESC
 document.addEventListener('keydown', function (event) {

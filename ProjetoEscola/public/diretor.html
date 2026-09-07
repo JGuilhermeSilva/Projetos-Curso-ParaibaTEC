@@ -29,6 +29,8 @@
                     Matrículas</div>
                 <div class="menu-item" onclick="abrirAba('cadastro', this)"><i class="fas fa-user-plus"></i> Cadastrar
                 </div>
+                <div class="menu-item" onclick="abrirAba('auditoria', this)"><i class="fas fa-history"></i> Auditoria
+                </div>
             </nav>
             <div class="logout-btn" onclick="sair()">Sair</div>
         </aside>
@@ -78,12 +80,27 @@
                     <div class="toolbar">
                         <div class="search-input"><i class="fas fa-search"></i><input id="busca-alunos"
                                 placeholder="Buscar por nome ou matrícula..." oninput="filtrarAlunos()"></div><select
-                            id="filtro-situacao">
-                            <option>Todos os alunos</option>
+                            id="filtro-situacao" onchange="filtrarAlunos()">
+                            <option value="">Todas as situações</option>
+                            <option value="matriculado">Matriculados (Ativos)</option>
+                            <option value="sem_matricula">Sem matrícula ativa</option>
+                            <option value="transferido">Transferidos</option>
                         </select>
                     </div>
                     <div class="student-filters">
                         <select id="filtro-escola" onchange="filtrarAlunos()"><option value="">Todas as escolas</option></select>
+                        <select id="filtro-serie" onchange="filtrarAlunos()">
+                            <option value="">Todas as séries / anos</option>
+                            <option value="1º">1º Ano</option>
+                            <option value="2º">2º Ano</option>
+                            <option value="3º">3º Ano</option>
+                            <option value="4º">4º Ano</option>
+                            <option value="5º">5º Ano</option>
+                            <option value="6º">6º Ano</option>
+                            <option value="7º">7º Ano</option>
+                            <option value="8º">8º Ano</option>
+                            <option value="9º">9º Ano</option>
+                        </select>
                         <input id="filtro-idade-min" type="number" min="0" placeholder="Idade mínima" onchange="filtrarAlunos()">
                         <input id="filtro-idade-max" type="number" min="0" placeholder="Idade máxima" onchange="filtrarAlunos()">
                         <select id="filtro-transporte" onchange="filtrarAlunos()"><option value="">Transporte escolar</option><option value="true">Usa transporte</option><option value="false">Não usa transporte</option></select>
@@ -136,6 +153,7 @@
                 <div id="aba-cadastro" class="tab-content" style="display:none;">
                     <h2>Cadastrar Novo Usuário</h2>
 
+                    <form id="form-cadastro" onsubmit="event.preventDefault(); cadastrarUsuario();">
                     <!-- Seletor de tipo de usuário -->
                     <div style="background:white; padding:20px; border-radius:10px; margin-bottom:20px;">
                         <label><strong>Tipo de Usuário:</strong></label>
@@ -301,8 +319,27 @@
 
                     </div>
 
-                    <button onclick="cadastrarUsuario()" style="width:100%; padding:15px; font-size:18px;">Cadastrar
-                        aluno</button>
+                    <button type="submit" id="btn-cadastrar-usuario" style="width:100%; padding:15px; font-size:18px;">Cadastrar Usuário</button>
+                    </form>
+                </div>
+                <div id="aba-auditoria" class="tab-content" style="display:none;">
+                    <div class="page-header">
+                        <div>
+                            <div class="breadcrumb">Início <span>/</span> <strong>Auditoria</strong></div>
+                            <h2>Log de Auditoria e Segurança</h2>
+                            <p>Histórico detalhado de alterações cadastrais, matrículas, notas e operações administrativas.</p>
+                        </div>
+                        <div class="page-actions">
+                            <button class="btn-secondary" onclick="carregarAuditoria()"><i class="fas fa-sync-alt"></i> Atualizar logs</button>
+                        </div>
+                    </div>
+                    <div class="toolbar">
+                        <div class="search-input">
+                            <i class="fas fa-search"></i>
+                            <input id="busca-auditoria" placeholder="Filtrar por usuário, entidade ou ação..." oninput="filtrarAuditoria()">
+                        </div>
+                    </div>
+                    <div id="lista-auditoria"></div>
                 </div>
             </div>
         </main>

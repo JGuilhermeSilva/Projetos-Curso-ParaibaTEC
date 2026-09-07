@@ -959,3 +959,44 @@ button:hover { transform: none; box-shadow: none; }
 .document-list small { display: block; color: var(--text-muted); font-size: 10px; }
 @media (max-width: 700px) { .report-grid { grid-template-columns: 1fr; } .form-inline { align-items: stretch; flex-direction: column; } .form-inline input { width: 100%; } }
 @media (max-width: 700px) { .quick-grid, .detail-grid { grid-template-columns: 1fr; } .detail-tabs { gap: 10px; overflow-x: auto; white-space: nowrap; } }
+
+/* Estilos da Ficha do Aluno Padrão SUAP */
+.ficha-modal { max-width: 980px !important; width: 95vw !important; max-height: 92vh !important; overflow-y: auto !important; }
+.student-summary { flex-direction: column; align-items: stretch !important; gap: 12px !important; }
+.student-summary-top { display: flex; align-items: center; gap: 16px; }
+.student-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 5px; font-size: 11px; color: var(--text-muted); }
+.student-institution { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 6px; font-size: 11px; color: #1e3a8a; }
+.header-actions-bar { display: flex; flex-wrap: wrap; gap: 8px; border-top: 1px dashed #e2e8f0; padding-top: 10px; }
+.header-actions-bar button { font-size: 11px; padding: 7px 12px; display: inline-flex; align-items: center; gap: 6px; }
+.badge-matricula { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+.badge-matricula.ativa { background: #dcfce7; color: #15803d; }
+.badge-matricula.transferida { background: #fef9c3; color: #854d0e; }
+.badge-matricula.sem-matricula { background: #fee2e2; color: #b91c1c; }
+.docs-checklist { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin-bottom: 16px; }
+.doc-check-item { display: flex; align-items: center; gap: 6px; padding: 7px 10px; border-radius: 6px; font-size: 11px; border: 1px solid var(--border-color); background: #fafafa; }
+.doc-check-item.ok { border-color: #86efac; background: #f0fdf4; color: #166534; font-weight: 600; }
+.doc-check-item.pendente { border-color: #fca5a5; background: #fef2f2; color: #991b1b; }
+.boletim-toolbar, .historico-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; background: #f8fafc; padding: 10px 14px; border-radius: 6px; border: 1px solid #e2e8f0; }
+.boletim-toolbar select, .historico-toolbar select { padding: 6px 10px; margin: 0; min-width: 140px; }
+.boletim-stats { display: flex; gap: 15px; margin-bottom: 14px; }
+.boletim-stats .stat-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px; flex: 1; text-align: center; }
+.boletim-stats .stat-card strong { display: block; font-size: 18px; color: var(--primary-dark); }
+.boletim-stats .stat-card span { font-size: 11px; color: var(--text-muted); }
+.status-aprovado { color: #16a34a; font-weight: 700; }
+.status-recuperacao { color: #d97706; font-weight: 700; }
+.status-reprovado { color: #dc2626; font-weight: 700; }
+.status-andamento { color: #2563eb; font-weight: 600; }
+.grade-aprovado { color: #15803d; font-weight: 700; }
+.grade-reprovado { color: #b91c1c; font-weight: 700; }
+
+.badge-audit { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+.badge-audit.create { background: #dcfce7; color: #15803d; }
+.badge-audit.update, .badge-audit.upsert { background: #e0f2fe; color: #0369a1; }
+.badge-audit.delete, .badge-audit.remove_matricula { background: #fee2e2; color: #b91c1c; }
+.badge-audit.enroll { background: #fef3c7; color: #92400e; }
+
+.custom-dialog-modal { max-width: 520px; width: 90vw; }
+.custom-dialog-modal h3 { margin-top: 0; margin-bottom: 12px; font-size: 16px; }
+.custom-dialog-modal label { display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); margin: 8px 0 4px; }
+.custom-dialog-modal select, .custom-dialog-modal input { width: 100%; margin-bottom: 8px; }
+.custom-dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
