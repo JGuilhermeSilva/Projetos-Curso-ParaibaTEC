@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Estoque</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="cadastro.html">Cadastrar Produto</a>
+        <a href="relatorios.html">Relatórios</a>
+        <a href="login.html" id="logout">Sair</a>
+    </nav>
+
+    <h1>Dashboard</h1>
+    <p id="bemvindo"></p>
+
+    <h3>Registrar Movimentação</h3>
+    <form id="movForm">
+        <select id="produtoSelect"></select>
+        <select id="tipoMov">
+            <option value="entrada">Entrada</option>
+            <option value="saida">Saída</option>
+        </select>
+        <input type="number" id="quantidadeMov" placeholder="Quantidade" required>
+        <input type="text" id="setorMov" placeholder="Setor destino" required>
+        <button type="submit">Registrar</button>
+    </form>
+</body>
+
+</html>

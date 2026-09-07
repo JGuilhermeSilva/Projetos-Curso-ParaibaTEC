@@ -1,0 +1,88 @@
+/* Fundo geral com imagem temática */
+body {
+    font-family: Arial, sans-serif;
+    margin: 10px;
+    background-image: url(img/logo-farmacia.jpeg);
+    background-size: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+h1 {
+    color: #006400;
+    text-align: center;
+}
+
+/*Bloco do produto*/
+.produto {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+/* Carrinho */
+.carrinho {
+    margin-top: 20px;
+    padding: 15px;
+    border: 2px solid #006400;
+    border-radius: 8px;
+    background: rgba(230, 255, 230, 0.9);
+}
+/*Cliente*/
+.cliente {
+    margin-top: 20px;
+    padding: 15px;
+    border: 2px solid #000080;
+    border-radius: 8px;
+    background: rgba(230, 240, 255, 0.9);
+}
+
+/* Histórico */
+.historico {
+    margin-top: 20px;
+    padding: 15px;
+    border: 2px solid #8b0000;
+    border-radius: 8px;
+    background: rgba(255, 240, 240, 0.9);
+}
+
+/*Botões*/
+button {
+    background: #006400;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+button:hover {
+    background: #00b300;
+}
+
+/*campo de entrada de dados(inputs)*/
+input {
+    width: 97%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 5px;
+    border: 1px solid #ccc;
+}
+
+/* Tela responsiva */
+@media (max-width: 600px) {
+    body {
+        font-size: 14px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .produto, .carrinho, .cliente, .historico {
+        padding: 10px;        
+    }
+}

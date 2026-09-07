@@ -1,0 +1,111 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: black;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.header {
+    background-color: #004080;
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    padding: 15px;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+/* criando o rodapé com data e hora*/
+.footer {
+    background-color: #004080;
+    color: white;
+    font-size: 20px;
+    text-align: center;
+    padding: 10px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.paciente {
+    display: none;
+    background-color: #222;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    text-align: center;
+    width: 80%;
+    margin-top: 80px;
+}
+
+/*Estilos dos textos*/
+.numero {
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.nome {
+    font-size: 30px;
+    margin: 10px 0;
+}
+
+.consultorio {
+    font-size: 25px;
+    margin: 10px 0;
+}
+
+.classificacao {
+    font-size: 25px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+/*Cores do protocolo*/
+.vermelho {
+    background-color: red;
+    color: white;
+}
+
+.laranja{
+    background-color: orangered;
+    color: white;
+}
+
+.amarelo {
+    background-color: yellow;
+    color: black;
+}
+
+.verde {
+    background-color: green;
+    color: white;
+}
+
+.azul{
+    background-color: blue;
+    color: white;
+}
+
+.botao-admin {
+    margin-top: 30px;
+    padding: 15px 30px;
+    font-size: 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.botao-admin:hover {
+    background-color: #45a049;
+}

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convocação de Pacientes</title>
+    <link rel="stylesheet" href="estilo.css">
+
+</head>
+<body>
+    <!--Cabeçalho com o nome do Hospital-->
+    <div class="header">UNIDADE MISTA DE SAÚDE</div>
+
+    <!-- Paciente 1 -->
+    <div class="paciente">
+        <div class="numero">Paciente Número 101</div>
+        <div class="nome">Anderson Souza Freitas</div>
+        <div class="consultorio">Consultório 3</div>
+        <div class="classificacao vermelho">Emergência</div>
+    </div>
+
+    <br>
+
+    <!-- Paciente 2 -->
+    <div class="paciente">
+        <div class="numero">Paciente Número 102</div>
+        <div class="nome">João de Souza Lima Filho</div>
+        <div class="consultorio">Consultório 1</div>
+        <div class="classificacao amarelo">Urgente</div>
+    </div>
+
+    <br>
+
+    <!-- Paciente 3 -->
+    <div class="paciente">
+        <div class="numero">Paciente Número 103</div>
+        <div class="nome">Renivaldo Dantas da Silva</div>
+        <div class="consultorio">Consultório 2</div>
+        <div class="classificacao verde">Pouco Urgente</div>
+    </div>
+
+    <br>
+
+    <!-- Paciente 4 -->
+    <div class="paciente">
+        <div class="numero">Paciente Número 104</div>
+        <div class="nome">Altamir Alves Araújo</div>
+        <div class="consultorio">Consultório 4</div>
+        <div class="classificacao azul">Não Urgente</div>
+    </div>
+
+    <br>
+
+    <!-- Paciente 5 -->
+    <div class="paciente">
+        <div class="numero">Paciente Número 105</div>
+        <div class="nome">Davi Pereira de Lima</div>
+        <div class="consultorio">Consultório 5</div>
+        <div class="classificacao laranja">Muito Urgente</div>
+    </div>
+
+    <br>
+
+    <!-- Paciente 6 -->
+    <div class="paciente">
+        <div class="numero">Paciente Número 106</div>
+        <div class="nome">Tiago Brandão Moura</div>
+        <div class="consultorio">Consultório 6</div>
+        <div class="classificacao verde">Pouco Urgente</div>
+    </div>
+
+    <br>
+
+    <!-- Paciente 7 -->
+    <div class="paciente">
+        <div class="numero">Paciente Número 107</div>
+        <div class="nome">Patrício Bezerra Dantas</div>
+        <div class="consultorio">Consultório 3</div>
+        <div class="classificacao vermelho">Emergência</div>
+    </div>
+    <br>
+
+    <!-- Paciente 8 -->
+    <div class="paciente">
+        <div class="numero">Paciente Número 108</div>
+        <div class="nome">Delei Lúcio da Silva</div>
+        <div class="consultorio">Consultório 1</div>
+        <div class="classificacao amarelo">Urgente</div>
+    </div>
+
+    <br>
+
+    <!-- Paciente 9 -->
+    <div class="paciente">
+        <div class="numero">Paciente Número 109</div>
+        <div class="nome">Kerven Medeiros Dantas</div>
+        <div class="consultorio">Consultório 4</div>
+        <div class="classificacao azul">Não Urgente</div>
+    </div>
+    <br>
+
+    <!-- Paciente 10 -->
+    <div class="paciente">
+        <div class="numero">Paciente Número 110</div>
+        <div class="nome">João Paulo Batista Dantas Fernandes</div>
+        <div class="consultorio">Consultório 5</div>
+        <div class="classificacao laranja">Muito Urgente</div>
+    </div>
+
+    <!-- Criando o botão de administrador que avança para o próximo paciente -->
+    <button class="botao-admin" onclick="mostrarProximo()">PRÓXIMO PACIENTE</button>
+
+    <!-- criando a data e ahora no rodapé -->
+    <div class="footer" id="footer"></div>
+
+    <!-- criando o elemento de audio -->
+    <audio id="bip" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+    <script src="script.js"></script>
+
+</body>
+</html>

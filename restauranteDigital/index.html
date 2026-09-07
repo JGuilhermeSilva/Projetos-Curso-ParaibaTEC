@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="pb-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Restaurante GL</title>
+    <link rel="stylesheet" href="estilo.css" />
+    
+  </head>
+
+  <body>
+    <!-- Titulo principal da pagina -->
+    <h1>Restaurante GL</h1>
+
+    <!-- Seção do cardápio com pratos disponiveis -->
+    <div id="cardapio">
+      <!-- Cada prato e um bloco com (nome, preco, estoque, e botão) -->
+      <div class="prato">
+        <h3>Pizza Margherita</h3>
+        <p>Preço: R$ 39,90</p>
+        <p>Disponível: <span id="estoque1"> 5</span></p>
+        <button onclick="adicionarCarrinho('Pizza Margherita', 39.9, 1)">
+          ADICIONAR
+        </button>
+      </div>
+
+      <div class="prato">
+        <h3>Carne de Sol Simples</h3>
+        <p>Preço: R$ 59,90</p>
+        <p>Disponível: <span id="estoque2"> 8</span></p>
+        <button onclick="adicionarCarrinho('Carne de Sol Simples', 59.9, 2)">
+          ADICIONAR
+        </button>
+      </div>
+
+      <div class="prato">
+        <h3>Peixe Frito</h3>
+        <p>Preço: R$ 29,90</p>
+        <p>Disponível: <span id="estoque3"> 10</span></p>
+        <button onclick="adicionarCarrinho('Peixe Frito', 29.9, 3)">
+          ADICIONAR
+        </button>
+      </div>
+
+      <div class="prato">
+        <h3>Macarronada</h3>
+        <p>Preço: R$ 19,90</p>
+        <p>Disponível: <span id="estoque4"> 6</span></p>
+        <button onclick="adicionarCarrinho('Macarronada', 19.9, 4)">
+          ADICIONAR
+        </button>
+      </div>
+
+      <div class="prato">
+        <h3>Frango Assado</h3>
+        <p>Preço: R$ 39,90</p>
+        <p>Disponível: <span id="estoque5"> 4</span></p>
+        <button onclick="adicionarCarrinho('Frango Assado', 39.9, 5)">
+          ADICIONAR
+        </button>
+      </div>
+
+      <div class="prato">
+        <h3>Creme de Galinha</h3>
+        <p>Preço: R$ 20,00</p>
+        <p>Disponível: <span id="estoque6"> 5</span></p>
+        <button onclick="adicionarCarrinho('Creme de Galinha', 20.0, 6)">
+          ADICIONAR
+        </button>
+      </div>
+
+      <div class="prato">
+        <h3>Táboa de de Fritas</h3>
+        <p>Preço: R$ 35,00</p>
+        <p>Disponível: <span id="estoque7"> 10</span></p>
+        <button onclick="adicionarCarrinho('Táboa de Fritas', 35.0, 7)">
+          ADICIONAR
+        </button>
+      </div>
+
+      <div class="prato">
+        <h3>Porção de Tripa</h3>
+        <p>Preço: R$ 20,00</p>
+        <p>Disponível: <span id="estoque8"> 8</span></p>
+        <button onclick="adicionarCarrinho('Porção de Tripa', 20.0, 8)">
+          ADICIONAR
+        </button>
+      </div>
+
+      <div class="prato">
+        <h3>Buchada</h3>
+        <p>Preço: R$ 70,00</p>
+        <p>Disponível: <span id="estoque9"> 4</span></p>
+        <button onclick="adicionarCarrinho('Buchada', 70.0, 9)">
+          ADICIONAR
+        </button>
+      </div>
+
+      <div class="prato">
+        <h3>Carne de Porco na Chapa</h3>
+        <p>Preço: R$ 45,00</p>
+        <p>Disponível: <span id="estoque10"> 9</span></p>
+        <button
+          onclick="adicionarCarrinho('Carne de Porco na Chapa', 45.0, 10)"
+        >
+          ADICIONAR
+        </button>
+      </div>
+
+      <div class="prato">
+        <h3>Feijoada</h3>
+        <p>Preço: R$ 20,00</p>
+        <p>Disponível: <span id="estoque11"> 10</span></p>
+        <button onclick="adicionarCarrinho('Feijoada', 20.0, 11)">
+          ADICIONAR
+        </button>
+      </div>
+
+      <div class="prato">
+        <h3>Carne de Sol na Nata</h3>
+        <p>Preço: R$ 55,00</p>
+        <p>Disponível: <span id="estoque12"> 7</span></p>
+        <button onclick="adicionarCarrinho('Carne de Sol na Nata', 55.0, 12)">
+          ADICIONAR
+        </button>
+      </div>
+
+      <div class="prato">
+        <h3>Baião de Dois</h3>
+        <p>Preço: R$16,90</p>
+        <p>Disponível: <span id="estoque13"> 14</span></p>
+        <button onclick="adicionarCarrinho('Baião de Dois', 16.9, 13)">
+          ADICIONAR
+        </button>
+      </div>
+    <!--correcao-->
+    </div>
+
+    <!-- Carrinho de compras -->
+    <div class="carrinho">
+      <h2>PEDIDO</h2>
+      <!-- Lista dos itens adicionados -->
+      <ul id="listaCarrinho"></ul>
+      <!-- Total do pedido -->
+      <p>Total: R$ <span id="total">0</span></p>
+    </div>
+
+    <!-- Formulario para dados do cliente -->
+    <div class="cliente">
+      <h2>Dados do Cliente</h2>
+      <form id="formCliente">
+        <input type="text" id="nome" placeholder="Nome Completo" required />
+
+        <input type="text" id="telefone" placeholder="Telefone" required />
+
+        <input type="text" id="mesa" placeholder="Número da Mesa" required />
+        
+        
+        <!-- correcao faltou esse botao -->
+        <button type="submit">FINALIZAR PEDIDO</button>
+      </form>
+
+    </div>
+
+    <!-- Área para avaliações dos pratos -->
+    <div class="avaliacao">
+      <h2>Avaliação dos Pratos</h2>
+      <textarea id="comentario" placeholder="Deixe o seu comentário"></textarea>
+      <input
+        type="number"
+        id="estrelas"
+        min="1"
+        max="5"
+        placeholder="Nota (1 a 5)"
+      />
+      <!--corecao adicionar botao-->
+      <button onclick="avaliar()">AVALIAR</button>
+
+      <!--Lista das avaliacoes já feitas-->
+      <div id="listaAvaliacoes"></div>
+
+      <!--Historico de avaliacoes já feitas-->
+      <div class="historico">
+        <h2>Histórico de Pedidos</h2>
+        <div id="listaHistorico"></div>
+      </div>
+    </div>
+
+    <!--relatorio de vendas-->
+    <div class="relatorio">
+      <h2>Relatório de Vendas</h2>
+      <button onclick="gerarRelatorio()">GERAR RELATÓRIO</button>
+      <div id="dadosRelatorio"></div>
+    </div>
+
+    <!--MODO ADMINISTRADOR-->
+    <div class="admin">
+      <h2>Modo Administrador</h2>
+      <!--criando campo de senha do admin-->
+      <div style="display: flex; align-items: center; gap: 8px">
+        <input type="password" id="senhaAdmin" placeholder="Senha" />
+        <label>
+          <input
+            type="checkbox" onclick="senhaAdmin.type = this.checked ? 'text' : 'password'"
+          />
+        </label>
+      </div>
+      <button onclick="entrarSenha()">ENTRAR</button>
+      <!-- Painel oculto que aparece após o login -->
+      <div id="painelAdmin" style="display: none">
+        <input type="text" id="novoPrato" placeholder="Nome do Prato" />
+
+        <input type="number" id="precoPrato" placeholder="Preço" />
+
+        <input type="number" id="estoquePrato" placeholder="Estoque" />
+
+        <button onclick="adicionarPrato()">ADICIONAR AO CARDÁPIO</button>
+
+        <div id="listaAdmin"></div>
+      </div>
+    </div>
+
+    <!-- Area de notificações (mensagens de sucesso/erro) -->
+    <div id="notificacao" class="notificacao"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

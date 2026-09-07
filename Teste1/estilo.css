@@ -1,0 +1,9 @@
+/*aqui estou mudando a cor de fundo do meu site*/
+body {
+    background-color: dodgerblue;
+}
+
+/*aqui estou mudando a cor do texto do meu paragrafo*/
+p {
+    color: yellow;
+}

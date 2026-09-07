@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Relatórios - Estoque</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+  <nav>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="cadastro.html">Cadastrar Produto</a>
+    <a href="relatorios.html">Relatórios</a>
+    <a href="login.html" id="logout">Sair</a>
+  </nav>
+
+  <h1>Relatórios</h1>
+  <button onclick="relatorioFalta()">Produtos em falta</button>
+  <button onclick="relatorioMov()">Movimentações</button>
+  <button onclick="relatorioValor()">Valor total em estoque</button>
+
+  <table id="relatorioTable">
+    <thead>
+      <tr id="relatorioHeader"></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</body>
+
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rádio Frei Martinho fm</title>
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+    <div class="radio">
+        <!-- Logo -->
+        <img src="img/rádio FM.png" alt="logo-radio" class="logo">
+        <!-- Nome do slogan -->
+        <h1>RÁDIO FREI MARTINHO</h1>
+
+        <div class="slogan"> A SUA RÁDIO, A NOSSA VOZ, A NOSSA CIDADE!</div>
+
+        <!-- Faixa atual -->
+        <div class="faixa-atual" id="faixaAtual"> Tocando agora: Música 1 - SoundHelix</div>
+
+        <!-- Criando o player -->
+        <audio id="player" controls src="/DW/RadioWeb/playlist/boto_ou_nao.mp3" type="audio/mpeg">
+            Seu Navegador não suporta aúdio HTML5.</audio>
+        <!-- Tempo -->
+        <div class="tempo">
+            <span id="tempoAtual">00:00</span> / <span id="tempoTotal">00:00</span>
+        </div>  
+
+        <!-- Criando a barrade progresso -->
+        <div class="barra" id="barra">
+            <div class="progresso" id="progresso"></div>
+        </div>
+
+        <!-- Criando a playlist -->
+        <div class="playlist">
+            <h3>Playlist</h3>
+            <ul id="lista">
+                <li onclick="tocarMusica(0)" class="active">Música 1 - Eu boto ou não boto</li>
+                <li onclick="tocarMusica(1)">Música 2 - Julieta Ta</li>
+                <li onclick="tocarMusica(2)">Música 3 - VIRA VIRA</li>
+            </ul>
+
+        </div>
+        <!-- Criando os botoes -->
+        <div class="controls">
+            <button onclick="modoAleatorio()">Aleatório</button>
+            <button onclick="modoRepetir()">Repetir</button>
+            <button onclick="modoNormal()">Normal</button>
+        </div>
+
+    </div>
+<script src="script.js"></script>
+</body>
+</html>

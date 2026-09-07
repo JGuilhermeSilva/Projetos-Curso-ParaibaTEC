@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SME - Sistema de Estoque Educacional</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    .low-stock {
+      background-color: #fee2e2;
+      border-left: 4px solid #ef4444;
+    }
+
+    .sidebar-item:hover {
+      background-color: #374151;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 font-sans">
+  <!-- TELA DE LOGIN -->
+  <div id="login-screen" class="min-h-screen flex items-center justify-center bg-blue-900">
+    <div class="bg-white p-8 rounded-lg shadow-2xl w-96">
+      <div class="text-center mb-8">
+        <i class="fas fa-school text-5xl text-blue-600"></i>
+        <h1 class="text-2xl font-bold mt-4 text-gray-800">SME Estoque</h1>
+        <p class="text-gray-500">Secretaria de Educação</p>
+      </div>
+      <form id="login-form">
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Usuário</label>
+          <input type="text" id="username"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="admin ou staff" required />
+        </div>
+        <div class="mb-6">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Senha</label>
+          <input type="password" id="password"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value="123456" required />
+        </div>
+        <button type="submit"
+          class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition">
+          Entrar
+        </button>
+      </form>
+      <p class="text-xs text-center mt-4 text-gray-400">
+        Dica: Use 'admin' ou 'user'
+      </p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD PRINCIPAL (ESCONDIDO INICIALMENTE) -->
+  <div id="main-content" class="min-h-screen flex hidden">
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-slate-800 text-white flex-shrink-0">
+      <div class="p-6 text-xl font-bold border-b border-slate-700 flex items-center gap-2">
+        <i class="fas fa-boxes-stacked"></i> SME Gestão
+      </div>
+      <nav class="mt-6">
+        <a href="#" onclick="switchTab('inventory')" class="sidebar-item block py-3 px-6"><i
+            class="fas fa-list mr-2"></i> Estoque Atual</a>
+        <a href="#" onclick="switchTab('movements')" class="sidebar-item block py-3 px-6"><i
+            class="fas fa-exchange-alt mr-2"></i> Entradas/Saídas</a>
+        <a href="#" onclick="logout()" class="sidebar-item block py-3 px-6 text-red-400 mt-10"><i
+            class="fas fa-sign-out-alt mr-2"></i> Sair</a>
+      </nav>
+    </aside>
+
+    <!-- CONTEÚDO -->
+    <main class="flex-1 p-8 overflow-y-auto">
+      <header class="flex justify-between items-center mb-8">
+        <h2 id="tab-title" class="text-3xl font-bold text-gray-800">
+          Estoque de Materiais
+        </h2>
+        <div class="flex items-center gap-4">
+          <span id="user-badge" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold"></span>
+          <button id="btn-add-product" onclick="openModal()"
+            class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 shadow-md">
+            <i class="fas fa-plus mr-2"></i> Novo Produto
+          </button>
+        </div>
+      </header>
+
+      <!-- ALERTAS DE ESTOQUE BAIXO -->
+      <div id="low-stock-alerts" class="mb-6"></div>
+
+      <!-- TABELA DE INVENTÁRIO -->
+      <section id="inventory-section" class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="w-full text-left">
+          <thead class="bg-gray-50 border-b">
+            <tr>
+              <th class="p-4 font-semibold text-gray-600">Produto</th>
+              <th class="p-4 font-semibold text-gray-600">Categoria</th>
+              <th class="p-4 font-semibold text-gray-600">Qtd Atual</th>
+              <th class="p-4 font-semibold text-gray-600">Mínimo</th>
+              <th class="p-4 font-semibold text-gray-600 text-right">
+                Ações
+              </th>
+            </tr>
+          </thead>
+          <tbody id="inventory-table-body">
+            <!-- Gerado por JS -->
+          </tbody>
+        </table>
+      </section>
+
+      <!-- TABELA DE MOVIMENTAÇÕES -->
+      <section id="movements-section" class="bg-white rounded-lg shadow overflow-hidden hidden">
+        <table class="w-full text-left">
+          <thead class="bg-gray-50 border-b">
+            <tr>
+              <th class="p-4 font-semibold text-gray-600">Data</th>
+              <th class="p-4 font-semibold text-gray-600">Tipo</th>
+              <th class="p-4 font-semibold text-gray-600">Produto</th>
+              <th class="p-4 font-semibold text-gray-600">Qtd</th>
+              <th class="p-4 font-semibold text-gray-600">Destino/Origem</th>
+              <th class="p-4 font-semibold text-gray-600">Responsável</th>
+            </tr>
+          </thead>
+          <tbody id="movements-table-body">
+            <!-- Gerado por JS -->
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL DE PRODUTO/MOVIMENTAÇÃO -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-8 rounded-lg shadow-xl w-[500px]">
+      <h3 id="modal-title" class="text-xl font-bold mb-4">Novo Produto</h3>
+      <form id="product-form">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="col-span-2">
+            <label class="block text-sm font-medium mb-1">Nome do Produto</label>
+            <input type="text" id="prod-name" class="w-full border p-2 rounded" required />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Categoria</label>
+            <select id="prod-cat" class="w-full border p-2 rounded">
+              <option>Papelaria</option>
+              <option>Limpeza</option>
+              <option>Informática</option>
+              <option>Merenda</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Estoque Mínimo</label>
+            <input type="number" id="prod-min" class="w-full border p-2 rounded" required />
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end gap-3">
+          <button type="button" onclick="closeModal()" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">
+            Cancelar
+          </button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            Salvar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL DE ENTRADA/SAÍDA -->
+  <div id="modal-movement" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-8 rounded-lg shadow-xl w-96">
+      <h3 class="text-xl font-bold mb-4">Registrar Movimentação</h3>
+      <form id="movement-form">
+        <input type="hidden" id="mov-prod-id" />
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium">Tipo</label>
+            <select id="mov-type" class="w-full border p-2 rounded">
+              <option value="in">Entrada (+)</option>
+              <option value="out">Saída (-)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Quantidade</label>
+            <input type="number" id="mov-qty" class="w-full border p-2 rounded" required min="1" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Destino / Procedência</label>
+            <input type="text" id="mov-dest" class="w-full border p-2 rounded" placeholder="Ex: Escola Municipal X"
+              required />
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Recebido por:</label>
+            <input type="text" id="mov-receiver" class="w-full border p-2 rounded" required />
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end gap-3">
+          <button type="button" onclick="closeMovementModal()"
+            class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">
+            Cancelar
+          </button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            Confirmar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // ESTADO DA APLICAÇÃO
+    let currentUser = null;
+    let products = JSON.parse(localStorage.getItem("sme_products")) || [];
+    let movements = JSON.parse(localStorage.getItem("sme_movements")) || [];
+
+    // LOGIN
+    document.getElementById("login-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const user = document.getElementById("username").value;
+      if (user === "admin" || user === "user") {
+        currentUser = {
+          name:
+            user === "admin" ? "Administrador Geral" : "Operador de Estoque",
+          role: user === "admin" ? "admin" : "staff",
+        };
+        initApp();
+      } else {
+        alert("Usuário inválido!");
+      }
+    });
+
+    function initApp() {
+      document.getElementById("login-screen").classList.add("hidden");
+      document.getElementById("main-content").classList.remove("hidden");
+      document.getElementById("user-badge").innerText =
+        `👤 ${currentUser.name}`;
+
+      // Controle de Permissão: Apenas Admin pode criar/excluir produtos estruturalmente
+      if (currentUser.role !== "admin") {
+        document.getElementById("btn-add-product").classList.add("hidden");
+      }
+
+      renderInventory();
+      renderMovements();
+      checkAlerts();
+    }
+
+    function logout() {
+      location.reload();
+    }
+
+    // NAVEGAÇÃO
+    function switchTab(tab) {
+      document
+        .getElementById("inventory-section")
+        .classList.toggle("hidden", tab !== "inventory");
+      document
+        .getElementById("movements-section")
+        .classList.toggle("hidden", tab !== "movements");
+      document.getElementById("tab-title").innerText =
+        tab === "inventory"
+          ? "Estoque de Materiais"
+          : "Histórico de Movimentações";
+    }
+
+    // CRUD PRODUTOS
+    document
+      .getElementById("product-form")
+      .addEventListener("submit", (e) => {
+        e.preventDefault();
+        const newProd = {
+          id: Date.now(),
+          name: document.getElementById("prod-name").value,
+          category: document.getElementById("prod-cat").value,
+          min: parseInt(document.getElementById("prod-min").value),
+          current: 0,
+        };
+        products.push(newProd);
+        saveData();
+        renderInventory();
+        closeModal();
+      });
+
+    function deleteProduct(id) {
+      if (currentUser.role !== "admin") return alert("Acesso negado!");
+      if (confirm("Tem certeza que deseja excluir este produto?")) {
+        products = products.filter((p) => p.id !== id);
+        saveData();
+        renderInventory();
+        checkAlerts();
+      }
+    }
+
+    // MOVIMENTAÇÕES
+    function openMovement(id) {
+      document.getElementById("mov-prod-id").value = id;
+      document.getElementById("modal-movement").classList.remove("hidden");
+    }
+
+    document
+      .getElementById("movement-form")
+      .addEventListener("submit", (e) => {
+        e.preventDefault();
+        const id = parseInt(document.getElementById("mov-prod-id").value);
+        const type = document.getElementById("mov-type").value;
+        const qty = parseInt(document.getElementById("mov-qty").value);
+
+        const product = products.find((p) => p.id === id);
+
+        if (type === "out" && product.current < qty) {
+          alert("Estoque insuficiente!");
+          return;
+        }
+
+        product.current =
+          type === "in" ? product.current + qty : product.current - qty;
+
+        const movement = {
+          date: new Date().toLocaleString(),
+          type: type === "in" ? "Entrada" : "Saída",
+          productName: product.name,
+          qty: qty,
+          destination: document.getElementById("mov-dest").value,
+          receiver: document.getElementById("mov-receiver").value,
+          staff: currentUser.name,
+        };
+
+        movements.unshift(movement);
+        saveData();
+        renderInventory();
+        renderMovements();
+        checkAlerts();
+        closeMovementModal();
+      });
+
+    // RENDERIZAÇÃO
+    function renderInventory() {
+      const tbody = document.getElementById("inventory-table-body");
+      tbody.innerHTML = "";
+
+      products.forEach((p) => {
+        const isLow = p.current <= p.min;
+        tbody.innerHTML += `
+                    <tr class="${isLow ? "low-stock" : ""} border-b hover:bg-gray-50 transition">
+                        <td class="p-4 font-medium">${p.name}</td>
+                        <td class="p-4 text-gray-600">${p.category}</td>
+                        <td class="p-4 font-bold ${isLow ? "text-red-600" : "text-green-600"}">${p.current}</td>
+                        <td class="p-4 text-gray-500">${p.min}</td>
+                        <td class="p-4 text-right">
+                            <button onclick="openMovement(${p.id})" class="text-blue-600 hover:text-blue-800 mr-3" title="Movimentar"><i class="fas fa-truck-ramp-box"></i></button>
+                            ${currentUser.role === "admin"
+            ? `
+                                <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-700" title="Excluir"><i class="fas fa-trash"></i></button>
+                            `
+            : ""
+          }
+                        </td>
+                    </tr>
+                `;
+      });
+    }
+
+    function renderMovements() {
+      const tbody = document.getElementById("movements-table-body");
+      tbody.innerHTML = "";
+      movements.forEach((m) => {
+        tbody.innerHTML += `
+                    <tr class="border-b text-sm">
+                        <td class="p-4 text-gray-500">${m.date}</td>
+                        <td class="p-4 font-bold ${m.type === "Entrada" ? "text-green-600" : "text-orange-600"}">${m.type}</td>
+                        <td class="p-4 font-medium">${m.productName}</td>
+                        <td class="p-4 font-bold">${m.qty}</td>
+                        <td class="p-4 text-gray-600">${m.destination}</td>
+                        <td class="p-4 text-gray-600">${m.receiver} <br><small class="text-xs">Registrado por: ${m.staff}</small></td>
+                    </tr>
+                `;
+      });
+    }
+
+    function checkAlerts() {
+      const alertDiv = document.getElementById("low-stock-alerts");
+      const lowStockItems = products.filter((p) => p.current <= p.min);
+
+      if (lowStockItems.length > 0) {
+        alertDiv.innerHTML = `
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-sm flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-3 text-xl"></i>
+                        <div>
+                            <p class="font-bold">Atenção: Itens em estoque crítico!</p>
+                            <p class="text-sm">Os seguintes produtos estão abaixo do mínimo: ${lowStockItems.map((i) => i.name).join(", ")}</p>
+                        </div>
+                    </div>
+                `;
+      } else {
+        alertDiv.innerHTML = "";
+      }
+    }
+
+    // AUXILIARES
+    function saveData() {
+      localStorage.setItem("sme_products", JSON.stringify(products));
+      localStorage.setItem("sme_movements", JSON.stringify(movements));
+    }
+
+    function openModal() {
+      document.getElementById("modal").classList.remove("hidden");
+    }
+    function closeModal() {
+      document.getElementById("modal").classList.add("hidden");
+    }
+    function closeMovementModal() {
+      document.getElementById("modal-movement").classList.add("hidden");
+      document.getElementById("movement-form").reset();
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Professor</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="logo">CadernoDigital</div>
+            <div class="user-profile">
+                <div class="avatar"><i class="fas fa-chalkboard-teacher"></i></div>
+                <div class="user-info"><strong id="nome-usuario"></strong><br><small>Professor</small></div>
+            </div>
+            <nav class="menu">
+                <div class="menu-item active" onclick="abrirAba('turmas', this)"><i class="fas fa-home"></i> Minhas
+                    Turmas</div>
+                <div class="menu-item" onclick="abrirAba('planos', this)"><i class="fas fa-file-alt"></i> Planos de
+                    Ensino</div>
+                <div class="menu-item" onclick="abrirAba('agenda', this)"><i class="fas fa-calendar-alt"></i> Agenda
+                </div>
+                <div class="menu-item" onclick="abrirAba('diarios', this)"><i class="fas fa-book-open"></i> Diários
+                </div>
+                <div class="menu-item" onclick="abrirAba('horarios', this)"><i class="fas fa-clock"></i> Horários</div>
+            </nav>
+            <div class="logout-btn" onclick="sair()">Sair</div>
+        </aside>
+        <main class="main-content">
+            <div class="content-area" id="conteudo-principal">
+                <!-- Conteúdo dinâmico -->
+            </div>
+        </main>
+    </div>
+    <script src="auth.js"></script>
+    <script src="script-professor.js"></script>
+</body>
+
+</html>

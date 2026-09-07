@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Açougue do Zé</title>
+    <link rel="stylesheet" href="estilo.css">
+
+</head>
+
+<body>
+    <!-- Cabeçalho com Logo -->
+    <header>
+        <div class="logo">
+            <!-- Anexando a imagem baixada -->
+            <img src="img/carne.png" alt="carne">
+            <!-- Nome do Açougue-->
+            <h1>AÇOUGUE DO ZÉ</h1>
+        </div>
+    </header>
+
+    <!-- Seção para cadastrar novos produtos -->
+    <section id="cadastro">
+        <h2>Cadastrar novo produto</h2>
+        <!-- Campo para nome da carne -->
+        <input type="text" id="nome-produto" placeholder="Nome da carne">
+
+        <!-- Campo para preço -->
+        <input type="number" id="preco-produto" placeholder="Preço por Kg" step="0.01">
+
+        <!-- Botão para cadastrar produto -->
+        <button onclick="cadastrarProduto()">CADASTRAR</button>
+    </section>
+
+    <!-- Lista dinâmica de produtos -->
+    <section id="produtos">
+        <h2>Produtos Disponíveis</h2>
+        <!-- Aqui os produtos serão renderizados pelo JavaScript -->
+        <div id="lista-produtos"></div>
+    </section>
+
+    <!-- Carinho de compras -->
+    <section id="carrinho">
+        <h2>Carrinho de Compras</h2>
+
+        <!-- Lista dos itens adicionados -->
+        <ul id="lista-carrinho"></ul>
+
+        <!-- Total da compra -->
+        <p id="total"> Total: R$ 0,00 </p>
+
+        <!-- Botão para finalizar a compra -->
+        <button class="finalizar" onclick="finalizarCompra()">FINALIZAR COMPRA</button>
+    </section>
+
+    <!-- Histórico de vendas -->
+    <section id="historico">
+        <h2>Histórico de Vendas</h2>
+        <!-- Lista das vendas realizadas -->
+        <ul id="lista-historico"></ul>
+    </section>
+
+    <!-- É aqui que eu importo o meu arquivo JavaScript -->
+    <script src="script.js"></script>
+
+</body>
+
+</html>

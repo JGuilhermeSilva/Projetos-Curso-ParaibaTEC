@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmácia Frei Martinho</title>
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+    <h1> &#x1f48a FARMÁCIA FREI MARTINHO</h1>
+    <!--Criando meus produtos-->
+    <div class="produto">
+        <h3>Paracetamol 500mg</h3>
+        <p>Preço: R$ 10,00</p>
+        <p>Estoque: <span id="estoque1">5</span>Unidades</p>
+
+        <button onclick="adicionarCarrinho('Paracetamol', 10, 1)">ADICIONAR</button>
+
+    </div>
+
+    <div class="produto">
+        <h3>Dipirona 1g</h3>
+        <p>Preço: R$ 12,00</p>
+        <p>Estoque: <span id="estoque2">3</span>Unidades</p>
+        
+        <button onclick="adicionarCarrinho('Dipirona', 12, 2)">ADICIONAR</button>
+
+    </div>
+    <div class="produto">
+        <h3>Álcool Gel 70%</h3>
+        <p>Preço: R$ 8,00</p>
+        <p>Estoque: <span id="estoque3">3</span>Unidades</p>
+        
+        <button onclick="adicionarCarrinho('Álcool Gel 70%', 8, 3)">ADICIONAR</button>
+        
+    </div>
+
+    <!--Criando o carrinho-->
+    <div class="carrinho">
+        <h2> &#x1f6d2 Carrinho</h2>
+        <ul id="listaCarrinho"></ul>
+        <p>TOTAL: R$ <span id="total">0</span></p>
+    </div>
+
+    <!--Criando campo dos clientes-->
+    <div class="cliente">
+        <h2> &#x1f464 Dados do Cliente</h2>
+        <form id="formCliente">
+            <input type="text" id="nome" placeholder="Nome Completo" required>
+            <input type="text" id="cpf" placeholder="CPF" required>
+            <input type="text" id="telefone" placeholder="Telefone" required>
+
+            <button type="submit">FINALIZAR COMPRA</button>
+        </form>
+    </div>
+
+    <!-- Criando Histórico de compras do cliente -->
+    <div class="historico">
+        <h2> &#x1f4c7 Histórico de Compras</h2>
+        <div id="listaHistorico"></div>
+    </div>
+    
+    <script src="script.js"></script>
+
+</body>
+</html>

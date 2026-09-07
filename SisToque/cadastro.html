@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro - Estoque</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="cadastro.html">Cadastrar Produto</a>
+        <a href="relatorios.html">Relatórios</a>
+        <a href="login.html" id="logout">Sair</a>
+    </nav>
+
+    <h1>Cadastrar Produto</h1>
+    <form id="produtoForm">
+        <input type="text" id="nomeProduto" placeholder="Nome" required>
+        <input type="text" id="codigoProduto" placeholder="Código" required>
+        <input type="text" id="categoriaProduto" placeholder="Categoria" required>
+        <input type="number" id="precoProduto" placeholder="Preço" required>
+        <input type="number" id="quantidadeProduto" placeholder="Quantidade" required>
+        <input type="text" id="setorProduto" placeholder="Setor" required>
+        <button type="submit">Cadastrar</button>
+    </form>
+</body>
+
+</html>
