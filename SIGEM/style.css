@@ -1,0 +1,69 @@
+/*estilo geral da pagina*/
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f3f4f6;
+    margin: 0;
+    padding: 0;
+}
+
+/*cabeçalho principal*/
+h1 {
+    background-color: #1e3a8a;
+    color: white;
+    padding: 15px;
+    margin: 0;
+    text-align: center;
+}
+
+nav {
+    background-color: #3b82f6;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /*permitir quebra de linha em */
+}
+
+/* botoes do menu */
+nav button {
+    margin: 5px;
+    padding: 10px 15px;
+    border: none;
+    background-color: #1e40af;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    flex: 1; /*faz os botoes se adaptarem ao espaço*/
+    min-width: 120px; /*largura minima para nao ficarem muito pequenos*/ 
+}
+
+/*efeito ao passar o mouse nos botoes*/
+nav button:hover {
+    background-color: #2563eb;
+}
+
+/*area de conteudo principal*/
+#conteudo {
+    padding: 20px;
+}
+
+/* inputs, selects e botoes dentro das telas*/
+input, select, button {
+    margin: 5px 0;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: 100%; /*ocupa toda a largura em telas pequenas*/
+    box-sizing: border-box;
+}
+
+/*botoes padrao*/
+button {
+    background-color: #1e40af;
+    color: white;
+    border: none;
+}
+
+/*efeito hover nos botoes padrao*/
+button:hover {
+    background-color: #2563eb;
+}

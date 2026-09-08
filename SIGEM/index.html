@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--importa o arquivo de estilos-->
+    <link rel="stylesheet" href="style.css">
+    <!--Manifest para transformar em PWA-->
+    <link rel="manifest" href="manifest.json">
+    <title>SIGEM</title>
+</head>
+
+<body>
+    <h1>SIGEM</h1>
+    
+    <nav>
+        <button onclick="mostrarTela('login')">Acessar</button>
+        <button onclick="mostrarTela('cadastro')">Cadastrar Produtos</button>
+        <button onclick="mostrarTela('entrada')">Entrada</button>
+        <button onclick="mostrarTela('saida')">Saída</button>
+        <button onclick="mostrarTela('saldo')">Saldo</button>
+        <button onclick="mostrarTela('usuarios')">Usuários</button>
+        <button onclick="logout()">Sair</button>
+    </nav>
+
+    <!-- area onde o conteudo das telas será renderizado dinamicamente -->
+    <div id="conteudo"></div>
+    <script src="script.js"></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js').then(() => console.log("Service Worker registrado!"));
+        }
+    </script>
+</body>
+
+</html>
