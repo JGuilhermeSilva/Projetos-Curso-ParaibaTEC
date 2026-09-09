@@ -67,3 +67,65 @@ button {
 button:hover {
     background-color: #2563eb;
 }
+
+/*listas de produtos e historico*/
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin: 5px 0;
+    padding: 8px;
+    background-color: #e5e7eb;
+    border-radius: 4px;
+}
+
+/*alerta de estoque baixo*/
+.alerta {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    font-weight: bold;
+}
+
+/*mensagens de erro*/
+p[style*="color:red"] {
+    font-weight: bold;
+    background-color: #fee2e2;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/*
+RESPONSIVIDADE
+*/
+
+/*telas pequenas (celulares)*/
+@media (max-width: 600px) {
+    nav{
+        flex-direction: column; /*menu em coluna*/
+        align-items: stretch;
+    }
+
+    nav button {
+        width: 100%; /*botoes ocupam toda a largura*/
+        margin: 5px 0;
+    }
+
+    #conteudo {
+        padding: 10px;
+    }
+}
+
+/*telas medias (tablets)*/
+
+@media (min-width: 601px) and (max-width: 1024px) {
+    nav {
+        flex-wrap: wrap;
+    }
+
+    nav button {
+        flex: 1 1 45%; /*botoes ocupam metade da linha*/
+        margin: 5px;
+    }
+}
